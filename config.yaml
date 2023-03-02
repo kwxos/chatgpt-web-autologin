@@ -1,0 +1,4 @@
+email: #登录邮箱
+password: #密码
+proxy: #代理
+wait-time: #等待时间，默认不用写
