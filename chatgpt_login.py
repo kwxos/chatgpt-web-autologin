@@ -80,14 +80,13 @@ if __name__ == '__main__':
             while True:
                 # 等待输出流可读或超时
                 ready = select.select([process.stdout], [], [], 1)
-                if not ready[0]:
-                    continue
-                # 读取一行输出结果并处理
-                output = process.stdout.readline().decode('utf-8')
-                if output == '' and process.poll() is not None:
-                    break
-                if output:
-                    logging.info(output.strip())
+                if ready[0]:
+                    # 读取一行输出结果并处理
+                    output = process.stdout.readline().decode('utf-8')
+                    if output == '' and process.poll() is not None:
+                        break
+                    if output:
+                        logging.info(output.strip())
                 # 超过定时时间后，关闭当前nodejs并执行下一轮
                 if time.time() > end_time:
                     process.kill()
