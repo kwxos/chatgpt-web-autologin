@@ -79,7 +79,7 @@ if __name__ == '__main__':
                     output = process.stdout.readline().decode('utf-8')
                     # 如果程序不再运行则跳出，重新获取token
                     if output == '' and process.poll() is not None:
-                        log.info("已关闭系统")
+                        logging.info("已关闭系统")
                         process.kill()
                         time.sleep(30)
                         break
@@ -87,7 +87,7 @@ if __name__ == '__main__':
                         logging.info(output.strip())
                 # 超过定时时间后，关闭当前nodejs并执行下一轮
                 if time.time() > end_time:
-                    log.info("关闭系统")
+                    logging.info("关闭系统")
                     process.kill()
                     time.sleep(30)
                     break
