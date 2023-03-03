@@ -83,6 +83,7 @@ if __name__ == '__main__':
                 if ready[0]:
                     # 读取一行输出结果并处理
                     output = process.stdout.readline().decode('utf-8')
+                    # 如果程序不再运行则跳出，重新获取token
                     if output == '' and process.poll() is not None:
                         break
                     if output:
