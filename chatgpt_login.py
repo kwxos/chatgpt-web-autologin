@@ -14,8 +14,8 @@ CONFIG_PATH = 'config.yaml'
 log = logging.basicConfig(level=logging.INFO,
                           format="%(asctime)s-%(name)s-%(levelname)s-%(message)s")
 # 定义随机时间范围
-min_time = 5 * 60  # 最小等待时间（分钟）
-max_time = 7 * 60  # 最大等待时间（分钟）
+min_time = 0.1 * 60  # 最小等待时间（分钟）
+max_time = 0.5 * 60  # 最大等待时间（分钟）
 
 
 # 配置文件
@@ -60,15 +60,9 @@ if __name__ == '__main__':
     # 循环执行
     while True:
         try:
-            try:
-                logging.info("开始获取token")
-                openAIAuth.begin()
-                token = openAIAuth.get_access_token()
-            except Exception as e:
-                logging.exception(e)
-                error_count = error_count + 1
-                if error_count > 5:
-                    break
+            logging.info("开始获取token")
+            openAIAuth.begin()
+            token = openAIAuth.get_access_token()
             logging.info('token:%s' % token)
             os.environ['OPENAI_ACCESS_TOKEN'] = token
             process = subprocess.Popen(['pnpm', 'run', 'start'], cwd="/app", stdout=subprocess.PIPE)
@@ -85,13 +79,20 @@ if __name__ == '__main__':
                     output = process.stdout.readline().decode('utf-8')
                     # 如果程序不再运行则跳出，重新获取token
                     if output == '' and process.poll() is not None:
+                        log.info("已关闭系统")
+                        process.kill()
+                        time.sleep(30)
                         break
                     if output:
                         logging.info(output.strip())
                 # 超过定时时间后，关闭当前nodejs并执行下一轮
                 if time.time() > end_time:
+                    log.info("关闭系统")
                     process.kill()
                     time.sleep(30)
                     break
         except Exception as e:
             logging.exception(e)
+            error_count = error_count + 1
+            if error_count > 5:
+                break
